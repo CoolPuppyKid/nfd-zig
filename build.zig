@@ -4,7 +4,12 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const nfd_mod = b.addModule("nfd", .{ .root_source_file = b.path("src/lib.zig"), .target = target, .optimize = optimize, .link_libc = true });
+    const nfd_mod = b.addModule("nfd", .{
+        .root_source_file = b.path("src/lib.zig"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
 
     const cflags = [_][]const u8{"-Wall"};
     nfd_mod.addIncludePath(b.path("nativefiledialog/src/include"));
@@ -32,13 +37,4 @@ pub fn build(b: *std.Build) void {
         },
         else => @panic("Unsupported OS list of supported devices:\nwindows,\nlinux,\nmac"),
     }
-
-    var example = b.addExecutable(.{
-        .name = "nfd-example",
-        .root_source_file = b.path("src/example.zig"),
-        .target = target,
-        .optimize = optimize,
-    });
-    example.root_module.addImport("nfd", nfd_mod);
-    b.installArtifact(example);
 }
